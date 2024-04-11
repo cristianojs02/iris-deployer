@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Depoly to IRIS
-        uses: ./
+        uses: cristianojs02/iris-deployer@76576ad607f9ace4ab8141c86d4584e3d7c67fe6
         with:
           # Use github secrets 
           host: '<IP or Host Name>'

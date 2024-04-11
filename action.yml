@@ -73,5 +73,5 @@ runs:
       shell: bash
     - name: Deploy to IRIS
       id: deploy-to-iris
-      run: python src/deploy_to_iris.py
+      run: python ./python-iris-deployer/deploy_to_iris.py
       shell: bash
