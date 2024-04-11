@@ -1,0 +1,77 @@
+name: Deploy To IRIS
+description: Send created, modigfied and deleted files to IRIS. Compile and return result of compilation.
+inputs:
+  host:
+    description: Host name or IP addres of WebSrever that communicate with IRIS server.
+    required: true
+  port:
+    description: port number of WebSrever that communicate with IRIS.
+    required: true
+    default: "52773"
+  namespace_iris:
+    description: Name of IRIS namespace to deploy.
+    required: true
+  https:
+    description: Flag indicting uses of HTTPS by the WebServer. 1-true, 0-false
+    required: true
+    default: "0"
+  base_api_url:
+    description: The base URL to IRIS Source Code File REST API
+    required: true
+    default: "/api/atelier/"
+  version_api:
+    description: The version of IRIS Source Code File REST API.
+    required: true
+    default: "v2"
+  compilation_flags:
+    description: Flags used by the IRIS compiler. See
+    required: true
+    default: "cukb"
+  source_path:
+    description: The source root path. Need to be extracted from source file name.
+    required: true
+    default: "src/"
+  iris_usr:
+    description: Iris user name
+    required: true
+  iris_pwd:
+    description: Iris user pwd
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Python
+      uses: actions/setup-python@v5.1.0
+      with:
+        python-version: "3.12"
+    - name: Install requests
+      run: pip install requests
+      shell: bash
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Get changed files and write the outputs to a JSON file
+      id: modified-files
+      uses: tj-actions/changed-files@v44
+      with:
+        separator: ","
+        files: |
+            **/*.{cls,mac,int,inc}
+    - name: Pass inputs to ENVIRONMENT
+      run: |
+        echo "INPUT_HOST=${{ inputs.host }}" >> $GITHUB_ENV
+        echo "INPUT_PORT=${{ inputs.port }}" >> $GITHUB_ENV
+        echo "INPUT_NAMESPACE_IRIS=${{ inputs.namespace_iris }}" >> $GITHUB_ENV
+        echo "INPUT_HTTPS=${{ inputs.https }}" >> $GITHUB_ENV
+        echo "INPUT_BASE_API_URL=${{ inputs.base_api_url }}" >> $GITHUB_ENV
+        echo "INPUT_VERSION_API=${{ inputs.version_api }}" >> $GITHUB_ENV
+        echo "INPUT_COMPILATION_FLAGS=${{ inputs.compilation_flags }}" >> $GITHUB_ENV
+        echo "INPUT_SOURCE_PATH=${{ inputs.source_path }}" >> $GITHUB_ENV
+        echo "INPUT_IRIS_USR=${{ inputs.iris_usr }}" >> $GITHUB_ENV
+        echo "INPUT_IRIS_PWD=${{ inputs.iris_pwd }}" >> $GITHUB_ENV
+        echo "INPUT_CHANGED_FILES=${{ steps.modified-files.outputs.all_changed_files }}" >> $GITHUB_ENV
+        echo "INPUT_DELETED_FILES=${{ steps.modified-files.outputs.deleted_files }}" >> $GITHUB_ENV
+      shell: bash
+    - name: Deploy to IRIS
+      id: deploy-to-iris
+      run: python src/deploy_to_iris.py
+      shell: bash
