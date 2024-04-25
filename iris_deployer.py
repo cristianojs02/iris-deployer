@@ -63,7 +63,7 @@ class IrisDeployer(object):
 
     def delete_docs(self, doc_list: str)-> None:
         '''
-        Receive a list with one or more files to delete.
+        Receive a string with list with one or more files to delete.
         '''
         response = self.__iris_session.delete(self.__DELETE_DOCS_URL, data=doc_list)
         iris_response: dict = json.loads(response.text)
@@ -167,7 +167,7 @@ if __name__ == '__main__':
         
         changed_files = os.environ['INPUT_CHANGED_FILES'].split(',')
         if len(changed_files) > 0:
-            iris_deployer.deploy_docs()
+            iris_deployer.deploy_docs(changed_files)
         else:
             logging.info('0 FILES TO DEPLOY!')
     
