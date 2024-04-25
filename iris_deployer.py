@@ -113,9 +113,7 @@ class IrisDeployer(object):
         Get document before send a update avoiding false conflict error.
         '''
         url: str = self.__GET_DOC_URL + file_name
-        logging.info(f'GETTINGO DOC: {url}')
         response = self.__iris_session.get(url)
-        logging.info(f'RETURNED DOC: {response.text}')
         iris_response: dict = json.loads(response.text)
         match response.status_code:
             case 200 | 404:
@@ -175,7 +173,7 @@ if __name__ == '__main__':
     
         deleted_files = os.environ['INPUT_DELETED_FILES'].split(',')
         if len(deleted_files) > 0:
-            iris_deployer.delete_docs('["' + '","'.join(deleted_files.split(',')) \
+            iris_deployer.delete_docs('["' + '","'.join(deleted_files) \
                 .replace(os.environ['INPUT_SOURCE_PATH'], '').replace('/', '.') + '"]')
         
         iris_deployer.exit()        
