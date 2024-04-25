@@ -115,6 +115,7 @@ class IrisDeployer(object):
         url: str = self.__GET_DOC_URL + file_name
         logging.info(f'GETTINGO DOC: {url}')
         response = self.__iris_session.get(url)
+        logging.info(f'RETURNED DOC: {response.text}')
         iris_response: dict = json.loads(response.text)
         match response.status_code:
             case 200 | 404:
