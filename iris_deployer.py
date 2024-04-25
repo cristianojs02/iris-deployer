@@ -57,7 +57,11 @@ class IrisDeployer(object):
         logging.error(iris_response['result']['status'])
         match response.status_code:
             case 200 | 201:
-                logging.info('\n'.join(iris_response['console']))
+                if iris_response['result']['status'] != "":
+                    logging.error(iris_response['result']['status'])
+                    self.__has_error = True
+                else:
+                    logging.info('\n'.join(iris_response['console']))
             case 409 | 403:
                 logging.warning('\n'.join(logging.info(iris_response['console'])))
             case _:
