@@ -166,7 +166,7 @@ if __name__ == '__main__':
                                     os.environ['INPUT_SOURCE_PATH'])
         
         changed_files = os.environ['INPUT_CHANGED_FILES'].split(',')
-        if changed_files.count > 0:
+        if changed_files.count() > 0:
             iris_deployer.deploy_docs()
         else:
             logging.info('0 FILES TO DEPLOY!')
