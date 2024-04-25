@@ -77,7 +77,7 @@ class IrisDeployer(object):
         '''
         Put each doc individual to IRIS, than compile all at once.
         '''
-        if changed_files.count == 0:
+        if len(changed_files) == 0:
             logging.info('0 FILES TO DEPLOY!')
             return
         
@@ -166,13 +166,13 @@ if __name__ == '__main__':
                                     os.environ['INPUT_SOURCE_PATH'])
         
         changed_files = os.environ['INPUT_CHANGED_FILES'].split(',')
-        if changed_files.count() > 0:
+        if len(changed_files) > 0:
             iris_deployer.deploy_docs()
         else:
             logging.info('0 FILES TO DEPLOY!')
     
         deleted_files = os.environ['INPUT_DELETED_FILES'].split(',')
-        if deleted_files.count > 0:
+        if len(deleted_files) > 0:
             iris_deployer.delete_docs('["' + '","'.join(deleted_files.split(',')) \
                 .replace(os.environ['INPUT_SOURCE_PATH'], '').replace('/', '.') + '"]')
         
