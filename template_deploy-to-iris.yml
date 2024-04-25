@@ -1,4 +1,4 @@
-# Workflow etemplate to Create, Upate, Delete and Compile source documents on IRIS
+# Template of a workflow to create, upate, delete and compile source documents on IRIS
 name: Deploy to IRIS
 # Trigger execute action
 on:
@@ -10,8 +10,8 @@ on:
   pull_request:
     branches:
       - <put you branch>
-  # Allow manually worflow execution
-  workflow_dispatch:
+#  Allow manually worflow execution
+#  workflow_dispatch:
 
 jobs:
   deploy-to-iris:
@@ -29,7 +29,6 @@ jobs:
       - name: Depoly to IRIS
         uses: cristianojs02/iris-deployer@main
         with:
-          # Use github secrets 
           host: '<IP or Host Name>'
           port: '<Port Number>'
           namespace_iris: '<CODENAMESPACE>'
@@ -44,5 +43,5 @@ jobs:
           # Use github secrets
           iris_usr: '<usr>'
           iris_pwd: '<pwd>'
-          changed_files: '{{ steps.modified-files.outputs.all_changed_files }}'
-          deleted_files: '{{ steps.modified-files.outputs.deleted_files }}'
+          changed_files: '${{ steps.modified-files.outputs.all_changed_files }}'
+          deleted_files: '${{ steps.modified-files.outputs.deleted_files }}'
