@@ -52,6 +52,9 @@ class IrisDeployer(object):
         url = self.__COMPLIE_DOCS_URL + '?source=0&flags=' + self.__compilation_flags
         response = self.__iris_session.post(url, doc_list)
         iris_response: dict = json.loads(response.text)
+        logging.info(f'STATUSOCDE: {response.status_code}')
+        logging.warning('\n'.join(logging.info(iris_response['console'])))
+        logging.error(iris_response['result']['status'])
         match response.status_code:
             case 200 | 201:
                 logging.info('\n'.join(iris_response['console']))
@@ -176,7 +179,7 @@ if __name__ == '__main__':
             iris_deployer.delete_docs('["' + '","'.join(deleted_files) \
                 .replace(os.environ['INPUT_SOURCE_PATH'], '').replace('/', '.') + '"]')
         
-        iris_deployer.exit()        
+        iris_deployer.exit()
     else:
         source_path = 'C:/Users/Cristiano Silva/OneDrive - CONFLUENCE/Projetos/Linker/src/'
         changed_files = [f'{source_path}test/githubaction/Test1.cls', f'{source_path}test/githubaction/Teste3.cls', f'{source_path}test/githubaction/Test4.cls']
