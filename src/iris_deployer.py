@@ -84,7 +84,23 @@ class IrisDeployer(object):
         '''
         Put each doc individual to IRIS, than compile all at once.
         '''
-        for source_file in changed_files:
+        if changed_files.count == 0:
+            logging.info('0 FILES TO DEPLOY!')
+            return
+        
+        for source_file in changed_files:            
+            # Fix document name. Remove sourcePath (IE.: src.)
+            # from document name to avoid error in IRIS.
+            file_name = source_file.replace(self.__source_path, '').replace('/', '.')
+            document = self.get_doc(file_name)
+            if document is None:
+                continue
+            
+            # if document exists set If-None-Match header to avoid conflict error
+            if document.ts != "":
+                self.__iris_session.headers.update({'If-None-Match' : document.ts})
+            
+            print(f'PROCESSING FILE {source_file}')
             with open(source_file, 'r') as reader:
                 source_document = {'enc': False, 'content' : []}
                 content = []
@@ -94,11 +110,6 @@ class IrisDeployer(object):
 
                 # JSON document with source code
                 source_document['content'] = content
-
-                # Fix document name. Remove sourcePath (IE.: src.)
-                # from document name to avoid error in IRIS.
-                file_name = source_file.replace(self.__source_path, '').replace('/', '.')
-
                 self.put_doc(source_document, file_name)
 
         files_to_compile = '["' + '","'.join(changed_files) \
@@ -107,13 +118,23 @@ class IrisDeployer(object):
 
         self.compile_docs(files_to_compile)
 
-    def get_doc()-> bool:
+    def get_doc(self, file_name: str)-> dict:
         '''
-        Checks if the file exists, because need to send a update if exists
-        ignoring the conflict error.
+        Get document before send a update avoiding false conflict error.
         '''
-        return True
-
+        logging.info(f'GETTING DOCUMENT: {url}')
+        url: str = self.__GET_DOC_URL + file_name
+        response = self.__iris_session.get(url)
+        
+        match response.status_code:
+            case 200 | 404:
+                return json.load(response.text)
+            case _:
+                logging.error(f'ERROR GETTING DOCUMENT!')
+                logging.error(response.text)
+        
+        return None
+        
     def put_doc(self, source_document: str, file_name: str)-> None:
         '''
         Send document to IRIS
@@ -130,7 +151,7 @@ class IrisDeployer(object):
                 logging.info(f'DOCUMENT UPDATED!')
                 logging.info(response.text)
             case 409:
-                logging.warning(f'DOCUMENT UPDATE WITH CONFLICT!')
+                logging.warning(f'DOCUMENT WITH CONFLICTS. NOT UPDATED!')
                 logging.warning(response.text)
             case 425:
                 logging.warning(f'DOCUMENT IS LOCKED AND CANNOT BE WRITTEN!')
@@ -151,14 +172,20 @@ if __name__ == '__main__':
                                 os.environ['INPUT_VERSION_API'],
                                 os.environ['INPUT_COMPILATION_FLAGS'],
                                 os.environ['INPUT_SOURCE_PATH'])
-    iris_deployer.deploy_docs(os.environ['INPUT_CHANGED_FILES'].split(','))
+    
+    changed_files = os.environ['INPUT_CHANGED_FILES'].split(',')
+    if changed_files.count > 0:
+        iris_deployer.deploy_docs()
+    else:
+        logging.info('0 FILES TO DEPLOY!')
 
-    deleted_files = '["' + '","'.join(os.environ['INPUT_DELETED_FILES'] \
-        .split(',')).replace(os.environ['INPUT_SOURCE_PATH'], '').replace('/', '.') + '"]'
+    deleted_files = os.environ['INPUT_DELETED_FILES'].split(',')
+    if deleted_files.count > 0:
+        iris_deployer.delete_docs('["' + '","'.join(deleted_files.split(',')) \
+            .replace(os.environ['INPUT_SOURCE_PATH'], '').replace('/', '.') + '"]')
 
-    iris_deployer.delete_docs(deleted_files)
 #
-# Standalone test need to comment the __main__ block above and uncomment the block above #
+# Standalone test need to comment the __main__ block above and uncomment the block bellow #
 #
 '''
 source_path = 'C:\\Users\\Cristiano Silva\\OneDrive - CONFLUENCE\\Projetos\\Linker\\src\\'

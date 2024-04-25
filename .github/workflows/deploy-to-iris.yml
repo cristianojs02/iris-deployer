@@ -5,11 +5,11 @@ on:
   push:
     # All push to these branchs trigger the action Deploy to IRIS 
     branches:
-      - main
+      - <put you branch>
    # All puspull_requesth to these branchs trigger the action Deploy to IRIS
   pull_request:
     branches:
-      - main
+      - <put you branch>
   # Allow manually worflow execution
   workflow_dispatch:
 
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Depoly to IRIS
-        uses: cristianojs02/iris-deployer@76576ad607f9ace4ab8141c86d4584e3d7c67fe6
+        uses: cristianojs02/<put the disered version>
         with:
           # Use github secrets 
           host: '<IP or Host Name>'
@@ -33,5 +33,5 @@ jobs:
           # Used to extract from document name before sen to IRIS, avoiding Document Not found error.
           source_path: 'src/'
           # Use github secrets
-          iris_usr: 'usr'
-          iris_pwd: 'pwd'
+          iris_usr: '<usr>'
+          iris_pwd: '<pwd>'
