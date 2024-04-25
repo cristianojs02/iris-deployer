@@ -84,7 +84,7 @@ class IrisDeployer(object):
         for source_file in changed_files:            
             # Fix document name. Remove sourcePath (IE.: src.)
             # from document name to avoid error in IRIS.
-            file_name = source_file.replace(self.__source_path, '').replace('/', '.')
+            file_name: str = source_file.replace(self.__source_path, '').replace('/', '.')
             document = self.get_doc(file_name)
             # if document exists set If-None-Match header to avoid conflict error
             if document is not None:                
@@ -113,6 +113,7 @@ class IrisDeployer(object):
         Get document before send a update avoiding false conflict error.
         '''
         url: str = self.__GET_DOC_URL + file_name
+        logging.info(f'GETTINGO DOC: {url}')
         response = self.__iris_session.get(url)
         iris_response: dict = json.loads(response.text)
         match response.status_code:
