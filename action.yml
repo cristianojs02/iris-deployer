@@ -37,41 +37,12 @@ inputs:
   iris_pwd:
     description: Iris user pwd
     required: true
+  changed_files:
+    description: Comma delimited string with a list of changed files to deploy.
+    required: true
+  deleted_files:
+    description: Comma delimited string with a list of deleted files to delete from server.
+    required: true
 runs:
-  using: 'composite'
-  steps:
-    - name: Install Python
-      uses: actions/setup-python@v5.1.0
-      with:
-        python-version: "3.12"
-    - name: Install requests
-      run: pip install requests
-      shell: bash
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Get changed files and write the outputs to a JSON file
-      id: modified-files
-      uses: tj-actions/changed-files@v44
-      with:
-        separator: ","
-        files: |
-            **/*.{cls,mac,int,inc}
-    - name: Pass inputs to ENVIRONMENT
-      run: |
-        echo "INPUT_HOST=${{ inputs.host }}" >> $GITHUB_ENV
-        echo "INPUT_PORT=${{ inputs.port }}" >> $GITHUB_ENV
-        echo "INPUT_NAMESPACE_IRIS=${{ inputs.namespace_iris }}" >> $GITHUB_ENV
-        echo "INPUT_HTTPS=${{ inputs.https }}" >> $GITHUB_ENV
-        echo "INPUT_BASE_API_URL=${{ inputs.base_api_url }}" >> $GITHUB_ENV
-        echo "INPUT_VERSION_API=${{ inputs.version_api }}" >> $GITHUB_ENV
-        echo "INPUT_COMPILATION_FLAGS=${{ inputs.compilation_flags }}" >> $GITHUB_ENV
-        echo "INPUT_SOURCE_PATH=${{ inputs.source_path }}" >> $GITHUB_ENV
-        echo "INPUT_IRIS_USR=${{ inputs.iris_usr }}" >> $GITHUB_ENV
-        echo "INPUT_IRIS_PWD=${{ inputs.iris_pwd }}" >> $GITHUB_ENV
-        echo "INPUT_CHANGED_FILES=${{ steps.modified-files.outputs.all_changed_files }}" >> $GITHUB_ENV
-        echo "INPUT_DELETED_FILES=${{ steps.modified-files.outputs.deleted_files }}" >> $GITHUB_ENV
-      shell: bash
-    - name: Deploy to IRIS
-      id: deploy-to-iris
-      run: python ./python-iris-deployer/deploy_to_iris.py
-      shell: bash
+  using: 'docker'
+  image: "Dockerfile"
