@@ -54,11 +54,10 @@ class IrisDeployer(object):
         iris_response: dict = json.loads(response.text)
         logging.info(f'STATUSOCDE: {response.status_code}')
         logging.warning('\n'.join(iris_response['console']))
-        logging.error(iris_response['result']['status'])
         match response.status_code:
             case 200 | 201:
-                if iris_response['result']['status'] != "":
-                    logging.error(iris_response['result']['status'])
+                if iris_response['status']['summary'] is not None:
+                    logging.error('\n'.join(iris_response['console']))
                     self.__has_error = True
                 else:
                     logging.info('\n'.join(iris_response['console']))
