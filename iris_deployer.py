@@ -53,7 +53,7 @@ class IrisDeployer(object):
         response = self.__iris_session.post(url, doc_list)
         iris_response: dict = json.loads(response.text)
         logging.info(f'STATUSOCDE: {response.status_code}')
-        logging.warning('\n'.join(logging.info(iris_response['console'])))
+        logging.warning('\n'.join(iris_response['console']))
         logging.error(iris_response['result']['status'])
         match response.status_code:
             case 200 | 201:
@@ -63,7 +63,7 @@ class IrisDeployer(object):
                 else:
                     logging.info('\n'.join(iris_response['console']))
             case 409 | 403:
-                logging.warning('\n'.join(logging.info(iris_response['console'])))
+                logging.warning('\n'.join(iris_response['console']))
             case _:
                 logging.error(iris_response['result']['status'])
                 self.__has_error = True
@@ -147,6 +147,7 @@ class IrisDeployer(object):
     
     def exit(self) -> None:
         '''Existis according __has_error flag'''
+        logging.info(f'EXITNIG WITH STATUS ERROR {self.__has_error}')
         if self.__has_error:
             sys.exit(1)
         
