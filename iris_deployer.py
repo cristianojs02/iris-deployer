@@ -53,7 +53,7 @@ class IrisDeployer(object):
         response = self.__iris_session.post(url, doc_list)
         iris_response: dict = json.loads(response.text)
         logging.info(f'STATUSOCDE: {response.status_code}')
-        logging.warning('\n'.join(iris_response['console']))
+        print('::warning ::\n'.join(iris_response['console']))
         match response.status_code:
             case 200 | 201:
                 if iris_response['status']['summary'] is not None:
