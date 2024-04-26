@@ -55,7 +55,7 @@ class IrisDeployer(object):
         console_message: str = '\n'.join(iris_response['console'])
         match response.status_code:
             case 200 | 201:
-                if iris_response['status']['summary'] is not None:
+                if iris_response['status']['summary'] == '':
                     logging.error(console_message)
                     self.__has_error = True
                 else:
@@ -185,7 +185,7 @@ if __name__ == '__main__':
         iris_deployer.exit()
     else:
         source_path = 'C:/Users/Cristiano Silva/OneDrive - CONFLUENCE/Projetos/Linker/src/'
-        changed_files = [f'{source_path}test/githubaction/Test1.cls', f'{source_path}test/githubaction/Teste3.cls', f'{source_path}test/githubaction/Test4.cls']
+        changed_files = [f'{source_path}test/githubaction/Test3.cls']
         iris_deployer = IrisDeployer('189.1.174.141',57776,'LINKER_CORE_DEV', 0, '/api/atelier/', 'cristiano.silva', 'Sup3rS3nh@', 'v2','cuk',source_path)
         iris_deployer.deploy_docs(changed_files)
         deleted_files = '["' + '","'.join(changed_files).replace(source_path, '').replace('/', '.') + '"]'
