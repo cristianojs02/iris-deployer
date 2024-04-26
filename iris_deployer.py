@@ -52,19 +52,18 @@ class IrisDeployer(object):
         url = self.__COMPLIE_DOCS_URL + '?source=0&flags=' + self.__compilation_flags
         response = self.__iris_session.post(url, doc_list)
         iris_response: dict = json.loads(response.text)
-        logging.info(f'STATUSOCDE: {response.status_code}')
-        print('::warning ::\n'.join(iris_response['console']))
+        console_message: str = '\n'.join(iris_response['console'])
         match response.status_code:
             case 200 | 201:
                 if iris_response['status']['summary'] is not None:
-                    logging.error('\n'.join(iris_response['console']))
+                    logging.error(console_message)
                     self.__has_error = True
                 else:
-                    logging.info('\n'.join(iris_response['console']))
+                    logging.info(console_message)
             case 409 | 403:
-                logging.warning('\n'.join(iris_response['console']))
+                logging.warning(console_message)
             case _:
-                logging.error(iris_response['result']['status'])
+                logging.error(console_message)
                 self.__has_error = True
 
     def delete_docs(self, doc_list: str)-> None:
