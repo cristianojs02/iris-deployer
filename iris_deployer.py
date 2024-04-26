@@ -55,7 +55,7 @@ class IrisDeployer(object):
         console_message: str = '\n'.join(iris_response['console'])
         match response.status_code:
             case 200 | 201:
-                if iris_response['status']['summary'] == '':
+                if iris_response['status']['summary'] != '':
                     logging.error(console_message)
                     self.__has_error = True
                 else:
@@ -120,8 +120,10 @@ class IrisDeployer(object):
         url: str = self.__GET_DOC_URL + file_name
         response = self.__iris_session.get(url)
         iris_response: dict = json.loads(response.text)
+        # For some unexplained rason the API returns status 409, indicating conflict 
+        # # in documentation the http status_code 409 is doesn't returned by method
         match response.status_code:
-            case 200 | 404:
+            case 200 | 404 | 409:
                 pass
             case _:
                 logging.error(iris_response['result']['status'])
@@ -144,8 +146,7 @@ class IrisDeployer(object):
                 self.__has_error = True
     
     def exit(self) -> None:
-        '''Existis according __has_error flag'''
-        logging.info(f'EXITNIG WITH STATUS ERROR {self.__has_error}')
+        '''Exists according __has_error flag'''
         if self.__has_error:
             sys.exit(1)
         
