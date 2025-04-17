@@ -185,9 +185,9 @@ if __name__ == '__main__':
         
         iris_deployer.exit()
     else:
-        source_path = 'C:/Users/Cristiano Silva/OneDrive - CONFLUENCE/Projetos/Linker/src/'
-        changed_files = [f'{source_path}test/githubaction/Test3.cls']
-        iris_deployer = IrisDeployer('189.1.174.141',57776,'LINKER_CORE_DEV', 0, '/api/atelier/', 'cristiano.silva', 'Sup3rS3nh@', 'v2','cuk',source_path)
+        source_path = '<local-path>'
+        changed_files = [f'{source_path}<file-changed>']
+        iris_deployer = IrisDeployer('<server-ip>',<server-port>,'<namespace>', 0, '/api/atelier/', '<user-name>', '<password>', 'v2','cuk',source_path)
         iris_deployer.deploy_docs(changed_files)
         deleted_files = '["' + '","'.join(changed_files).replace(source_path, '').replace('/', '.') + '"]'
         iris_deployer.delete_docs(deleted_files)
