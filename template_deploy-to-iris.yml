@@ -5,11 +5,11 @@ on:
   push:
     # All push to these branchs trigger the action Deploy to IRIS 
     branches:
-      - <put you branch>
-   # All puspull_requesth to these branchs trigger the action Deploy to IRIS
-  pull_request:
-    branches:
-      - <put you branch>
+      - <main>
+  # All puspull_requesth to these branchs trigger the action Deploy to IRIS
+  #pull_request:
+  #  branches:
+  #    - <put you branch>
 #  Allow manually worflow execution
 #  workflow_dispatch:
 
@@ -17,6 +17,7 @@ jobs:
   deploy-to-iris:
     runs-on: ubuntu-latest
     steps:
+    # The 2 steps bellow checkout the changed files to deploy to IRIS, don't change.
       - name: Checkout
         uses: actions/checkout@v4
       - name: Get changed files and write the outputs to a JSON file
@@ -26,6 +27,7 @@ jobs:
           separator: ","
           files: |
               **/*.{cls,mac,int,inc}
+      # Final checkout files
       - name: Depoly to IRIS
         uses: cristianojs02/iris-deployer@main
         with:
@@ -41,7 +43,8 @@ jobs:
           # Used to extract from document name before sen to IRIS, avoiding Document Not found error.
           source_path: 'src/'
           # Use github secrets
-          iris_usr: '<usr>'
-          iris_pwd: '<pwd>'
+          iris_usr: '${{ secrets.IRIS_USER }}'
+          iris_pwd: '${{ secrets.IRIS_PWD }}'
+          # don't change bellow lines
           changed_files: '${{ steps.modified-files.outputs.all_changed_files }}'
           deleted_files: '${{ steps.modified-files.outputs.deleted_files }}'
