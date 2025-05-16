@@ -213,52 +213,61 @@ To use this GitHub Action in your project, follow the steps below:
 2.  Paste the following content into the file, adapting it to your needs:
 
 ```yaml
+# Template of a workflow to create, upate, delete and compile source documents on IRIS
 name: Deploy to IRIS
-
+# Trigger execute action
 on:
   push:
+    # All push to these branchs trigger the action Deploy to IRIS 
     branches:
-      - main # or your main branch
+      - <main>
+  # All puspull_requesth to these branchs trigger the action Deploy to IRIS
+  #pull_request:
+  #  branches:
+  #    - <put you branch>
+#  Allow manually worflow execution
+#  workflow_dispatch:
 
 jobs:
-  deploy_iris:
+  deploy-to-iris:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+    # The 2 steps bellow checkout the changed files to deploy to IRIS, don't change.
+      - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Identify changed and deleted files
-        id: files
-        run: |
-          git diff --name-only --relative HEAD^ HEAD > changed_files.txt
-          git diff --name-only --relative --diff-filter=D HEAD^ HEAD > deleted_files.txt
-          changed=<span class="math-inline">\(cat changed\_files\.txt \| tr '\\n' ','\)
-deleted\=</span>(cat deleted_files.txt | tr '\n' ',')
-          echo "changed_files=$changed" >> "$GITHUB_OUTPUT"
-          echo "deleted_files=$deleted" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy to IRIS
-        uses: ./.github/actions/your-action-directory # Assuming your action files are in .github/actions/your-action-directory
+      - name: Get changed files and write the outputs to a JSON file
+        id: modified-files
+        uses: tj-actions/changed-files@v44
         with:
-          host: ${{ secrets.IRIS_HOST }}
-          port: ${{ secrets.IRIS_PORT }}
-          namespace_iris: ${{ secrets.IRIS_NAMESPACE }}
-          https: ${{ secrets.IRIS_HTTPS }}
-          base_api_url: ${{ secrets.IRIS_BASE_API_URL }}
-          version_api: ${{ secrets.IRIS_VERSION_API }}
-          compilation_flags: ${{ secrets.IRIS_COMPILATION_FLAGS }}
-          source_path: 'src/' # Adjust to your path
-          iris_usr: ${{ secrets.IRIS_USER }}
-          iris_pwd: ${{ secrets.IRIS_PASSWORD }}
-          changed_files: ${{ steps.files.outputs.changed_files }}
-          deleted_files: ${{ steps.files.outputs.deleted_files }}
+          separator: ","
+          files: |
+              **/*.{cls,mac,int,inc}
+      # Final checkout files
+      - name: Depoly to IRIS
+        uses: cristianojs02/iris-deployer@main
+        with:
+          host: '<IP or Host Name>'
+          port: '<Port Number>'
+          namespace_iris: '<CODENAMESPACE>'
+          # 0 - HTTP, 1 - HTTPS 
+          https: '0'
+          base_api_url: '/api/atelier'
+          version_api: 'v2'
+          # Change if you don't want default flags compilation
+          compilation_flags: 'cukb'
+          # Used to extract from document name before sen to IRIS, avoiding Document Not found error.
+          source_path: 'src/'
+          # Use github secrets
+          iris_usr: '${{ secrets.IRIS_USER }}'
+          iris_pwd: '${{ secrets.IRIS_PWD }}'
+          # don't change bellow lines
+          changed_files: '${{ steps.modified-files.outputs.all_changed_files }}'
+          deleted_files: '${{ steps.modified-files.outputs.deleted_files }}'
 ```
 
-3.  **Important:** Store sensitive information (host, port, namespace, user, password, etc.) as [GitHub Secrets](https://docs.github.com/en/actions/security-secrets#creating-and-managing-encrypted-secrets). Replace the direct values in the YAML file with references to your secrets (e.g., `${{ secrets.IRIS_HOST }}`).
+3.  **Important:** Store sensitive information (host, port, namespace, user, password, etc.) as [GitHub Secrets](https://docs.github.com/en/actions/security-secrets#creating-and-managing-encrypted-secrets). Replace the direct values in the YAML file with references to your secrets (e.g., `${{ secrets.IRIS_USER }}`).
 
-4.  Adjust the path to your Action in the `uses: ./.github/actions/your-action-directory` line. If your Action files (Dockerfile, Python script, action.yml) are in the root of the repository, use `uses: ./`.
-
-5.  Adapt the `source_path` in the `Deploy to IRIS` step to match your project structure.
+4.  Adapt the `source_path` in the `Deploy to IRIS` step to match your project structure.
 
 ### Workflow Example
 
