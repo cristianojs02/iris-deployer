@@ -3,7 +3,6 @@
 # Source Code Deployment to InterSystems IRIS via GitHub Actions
 
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![Docker Automated build](https://img.shields.io/docker/automated/YOUR_DOCKERHUB_USERNAME/YOUR_DOCKERHUB_REPOSITORY.svg)
 <!--![GitHub Actions Status](https://github.com/YOUR_GITHUB_USERNAME/YOUR_GITHUB_REPOSITORY/actions/workflows/YOUR_WORKFLOW_FILE.yml/badge.svg)!-->
 
 This project consists of a GitHub Action that automates the deployment of source code files to an InterSystems IRIS server. It utilizes the IRIS source code management REST API to create, update, compile, and delete documents.
