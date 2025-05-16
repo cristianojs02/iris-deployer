@@ -274,7 +274,7 @@ jobs:
 The example workflow above will run whenever there is a `push` to the `main` branch. It performs the following steps:
 
 1.  **Checkout code:** Downloads your repository code to the GitHub Actions runner.
-2.  **Identify changed and deleted files:** Uses `git diff` commands to identify files that have been modified or added (`changed_files.txt`) and files that have been deleted (`deleted_files.txt`). The output is formatted as comma-separated strings and set as outputs of the `files` step.
+2.  **Identify changed and deleted files:** identify files that have been modified or added `${{ steps.modified-files.outputs.all_changed_files }}` and files that have been deleted `${{ steps.modified-files.outputs.all_changed_files }}`.
 3.  **Deploy to IRIS:** Uses your custom "Deploy To IRIS" action, passing the necessary inputs using the GitHub Secrets and the output from the previous step.
 
 ## Contribution
