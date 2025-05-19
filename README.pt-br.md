@@ -1,4 +1,4 @@
-[Português Brasil](/README.md)
+[English](/README.md)
 
 # Deploy de Código-Fonte para InterSystems IRIS via GitHub Actions
 
@@ -271,4 +271,12 @@ O exemplo de workflow acima será executado sempre que houver um `push` na branc
 
 1.  **Checkout do código:** Faz o download do código do seu repositório para o runner da GitHub Actions.
 2.  **Identificar arquivos alterados e deletados:** ${{ steps.modified-files.outputs.all_changed_files }} e arquivos que foram deletados ${{ steps.modified-files.outputs.deleted_files }}
-3.  **Deploy para IRIS:** Utiliza sua Action customizada "Deploy To IR
+3.  **Deploy to IRIS:** Usa sua ação personalizada "Implantar no IRIS", passando as entradas necessárias usando os segredos do GitHub e a saída da etapa anterior.
+
+## Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests ou abrir issues para sugerir melhorias ou relatar bugs.
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
